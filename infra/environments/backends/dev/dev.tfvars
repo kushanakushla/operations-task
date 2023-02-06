@@ -1,0 +1,5 @@
+bucket = "tf-test-kushan-state"
+key    = "terraform.tfstate"
+# dynamodb_table = "terraform-state-nonprod-016160146726"
+region = "us-east-1"
+# role_arn       = "arn:aws:iam::016160146726:role/devops-agent-role"
