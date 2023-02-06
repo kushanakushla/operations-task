@@ -24,17 +24,21 @@ locals {
         "secrets": [
           {
             "name": "POSTGRES_HOST",
-            "valueFrom": "${module.rds_posrgres_cred.secret.arn}"
+            "valueFrom": "${module.rds_postgres_endpoint.secret.arn}"
           },
           {
             "name": "POSTGRES_PASSWORD",
-            "valueFrom": "${module.rds_postgres_endpoint.secret.arn}"
+            "valueFrom": "${module.rds_posrgres_cred.secret.arn}"
+          },
+          {
+            "name": "PGPASSWORD",
+            "valueFrom": "${module.rds_posrgres_cred.secret.arn}"
           }
         ],
         "environment": [
           {
             "name": "POSTGRES_DB",
-            "value": "postgres"
+            "value": "rates"
           },
           {
             "name": "POSTGRES_USER",
@@ -388,6 +392,7 @@ module "postgres_db" {
   instance_class         = "db.t3.micro"
   allocated_storage      = 20
   username               = "postgres"
+  db_name                = "rates"
   password               = random_password.postgres_db_password.result
   port                   = 5432
   vpc_security_group_ids = [module.db_security_group.sg_id]
@@ -408,7 +413,7 @@ module "rds_postgres_endpoint" {
   source = "../modules/secret"
   name   = "testrds-db-postgres3"
   secret_string = {
-    POSTGRES_HOST     = module.postgres_db.rds.address
+    POSTGRES_HOST     = module.postgres_db.rds.endpoint
   }
   tags = local.tags
 }
