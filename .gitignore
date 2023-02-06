@@ -12,3 +12,5 @@ crash.*.log
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 152135864633.dkr.ecr.us-east-1.amazonaws.com

@@ -1,3 +1,3 @@
 #!/bin/sh
-PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USERNAME < rates.sql
+PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER < rates.sql
 gunicorn -b :3000 wsgi
