@@ -1,10 +1,3 @@
-resource "random_password" "rds-db-password" {
-  length  = 32
-  upper   = true
-  lower   = true
-  numeric = true
-  special = false
-}
 
 resource "aws_db_instance" "rds_instance" {
   identifier = format("%s-%s-rds", var.identifier, var.tags["Environment"])

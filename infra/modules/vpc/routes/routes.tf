@@ -3,7 +3,7 @@
 # Public
 resource "aws_route_table" "public_route_table" {
   vpc_id = var.vpc_id
-  tags   = merge({ Name = "public-route-${var.vpc_name}" }, var.tags)
+  tags   = merge({ Name = format("public-route-%s-%s", "${var.vpc_name}", "${var.tags["Environment"]}") }, var.tags)
 }
 
 resource "aws_route" "public_route_inet" {
@@ -22,7 +22,7 @@ resource "aws_route_table_association" "public_subnets" {
 resource "aws_route_table" "private_route_table" {
   count  = var.num_az
   vpc_id = var.vpc_id
-  tags   = merge({ Name = "private-route-${var.vpc_name}-${var.vpc_azs[count.index]}" }, var.tags)
+  tags   = merge({ Name = format("private-route-%s-%s-%s", "${var.vpc_name}", "${var.tags["Environment"]}", "${var.vpc_azs[count.index]}") }, var.tags)
 }
 
 resource "aws_route" "private_route_inet" {

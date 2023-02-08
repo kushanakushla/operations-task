@@ -4,11 +4,12 @@ resource "aws_flow_log" "vpc" {
   log_destination = aws_cloudwatch_log_group.vpc_flow.arn
   traffic_type    = "ALL"
   vpc_id          = var.vpc_id
-  tags            = merge({ Name = "${var.vpc_name}" }, var.tags)
+  tags            = merge({ Name = format("%s-%s", "${var.vpc_name}", "${var.tags["Environment"]}") }, var.tags)
+
 }
 
 resource "aws_cloudwatch_log_group" "vpc_flow" {
-  name              = "${var.vpc_name}-vpc-flowlogs"
+  name              = format("%s-%s-vpc-flow-logs", "${var.vpc_name}", "${var.tags["Environment"]}")
   retention_in_days = 30
-  tags              = merge({ Name = "${var.vpc_name}" }, var.tags)
+  tags              = merge({ Name = format("%s-%s", "${var.vpc_name}", "${var.tags["Environment"]}") }, var.tags)
 }

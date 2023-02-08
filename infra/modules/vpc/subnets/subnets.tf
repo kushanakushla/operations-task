@@ -4,5 +4,5 @@ resource "aws_subnet" "subnets" {
   availability_zone       = element(var.vpc_azs, count.index)
   cidr_block              = element(var.subnets_cidr, count.index)
   map_public_ip_on_launch = var.map_public_ip_on_launch
-  tags                    = merge({ Name = "${var.subnet_type}-${var.vpc_name}-${var.vpc_azs[count.index]}" }, var.tags)
+  tags                    = merge({ Name = format("%s-%s-%s-%s", "${var.subnet_type}", "${var.vpc_name}", "${var.tags["Environment"]}", "${var.vpc_azs[count.index]}") }, var.tags)
 }

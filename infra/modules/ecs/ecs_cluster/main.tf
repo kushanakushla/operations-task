@@ -1,5 +1,5 @@
 resource "aws_ecs_cluster" "cluster" {
-  name = format("%s-%s", var.cluster_name, var.tags["Environment"])
+  name = format("%s-%s-ecs-cluster", var.cluster_name, var.tags["Environment"])
 
   configuration {
     execute_command_configuration {

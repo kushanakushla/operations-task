@@ -4,5 +4,6 @@ resource "aws_vpc" "vpc" {
   instance_tenancy     = "default"
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags                 = merge({ Name = "${var.vpc_name}" }, var.tags)
+  tags                 = merge({ Name = format("%s-app-vpc-%s", "${var.vpc_name}", "${var.tags["Environment"]}") }, var.tags)
 }
+

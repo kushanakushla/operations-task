@@ -3,9 +3,13 @@ variable "tags" {
   description = "resource tag mapping"
 }
 
+variable "name" {
+  type        = string
+  description = "Name of the security group"
+}
+
 variable "security_group" {
   type = object({
-    name        = string,
     description = string,
     vpc_id      = string,
     cidr_block_ingress_rules = optional(list(object({

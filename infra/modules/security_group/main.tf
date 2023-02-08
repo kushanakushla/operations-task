@@ -1,5 +1,5 @@
 resource "aws_security_group" "sg" {
-  name        = var.security_group["name"]
+  name        = format("%s-%s", var.name, var.tags["Environment"])
   description = var.security_group["description"]
   vpc_id      = var.security_group["vpc_id"]
   tags        = var.tags

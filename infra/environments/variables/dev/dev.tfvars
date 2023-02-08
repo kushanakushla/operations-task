@@ -1,12 +1,14 @@
-#Tags
+### Global Variables
 global_tags = {
   "App"         = "testapp"
   "ManagedBy"   = "Terraform"
   "Environment" = "dev"
 }
 
-# Define CIDR block for VPC
-vpc_name = "test"
+tags = {
+}
+
+### VPC Components related variables
 
 region                          = "us-east-1"
 vpc_cidr                        = "10.240.26.0/23"
@@ -15,16 +17,25 @@ pub_subnets_cidr                = ["10.240.26.0/26", "10.240.26.64/26"]
 db_subnets_cidr                 = ["10.240.27.0/26", "10.240.27.64/26"]
 vpc_azs                         = ["us-east-1a", "us-east-1b"]
 num_az                          = 2
-priv_subnet_type                = "private"
-pub_subnet_type                 = "public"
-db_subnet_type                  = "db"
 pub_sub_map_public_ip_on_launch = "true"
-vpc_flow_iam_set                = true
 
-tags = {
-}
+## If creating multiple VPCs on same account set this to false in other vpc creation configs 
+vpc_flow_iam_set = true
 
-tg_name      = "application-tg"
-target_type  = "ip"
-cluster_name = "ecs-app-test"
-image_tag    = "27.0.0"
+image_tag   = "30.0.0"
+application = "xeneta"
+
+db_username          = "postgres"
+db_name              = "rates"
+db_instance_class    = "db.t3.micro"
+db_allocated_storage = "20"
+
+ecs_task_cpu       = "256"
+ecs_task_memory    = "512"
+desired_task_count = "2"
+container_name     = "rates-app-container"
+container_port     = "3000"
+
+task_execution_role_name = "xeneta-task-exec-role-dev"
+db_restore_role_name     = "db-restore-ec2-role-dev"
+application_image_name   = "rates-app"

@@ -3,9 +3,9 @@ variable "vpc_cidr" {
   description = "VPC CIDR network address"
 }
 
-variable "vpc_name" {
+variable "application" {
   type        = string
-  description = "VPC name"
+  description = "Name of the Application"
 }
 
 variable "tags" {
@@ -29,15 +29,18 @@ variable "pub_sub_map_public_ip_on_launch" {
 
 variable "priv_subnet_type" {
   type        = string
-  description = "Type of the Subnet"
+  default     = "private"
+  description = "name map for private subnets"
 }
 variable "pub_subnet_type" {
   type        = string
-  description = "Type of the Subnet"
+  default     = "public"
+  description = "name map for public subnets"
 }
 variable "db_subnet_type" {
   type        = string
-  description = "Type of the Subnet"
+  default     = "db"
+  description = "name map for db subnets"
 }
 variable "priv_subnets_cidr" {
   description = "CIDR for Private subnet"
@@ -61,51 +64,30 @@ variable "vpc_azs" {
 
 variable "num_az" {}
 
-variable "tg_name" {
+variable "db_username" {
   type        = string
-  description = "The name of the load balancer. This name must be unique per region per account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, must not begin or end with a hyphen, and must not begin with \"internal-\"."
+  default     = "postgres"
+  description = "username of the rds database"
 }
 
-variable "target_type" {
-  default     = "instance"
+variable "db_name" {
   type        = string
-  description = "Type of target that you must specify when registering targets with this target group."
-  validation {
-    condition     = contains(["instance", "ip", "lambda"], var.target_type)
-    error_message = "Supported target types are (\"instance\", \"ip\", \"lambda\")."
-  }
+  default     = "postgres"
+  description = "name of the database to created within rds instance"
 }
 
-variable "cluster_name" {
+variable "db_instance_class" {
   type        = string
-  description = "A user-generated string that you use to identify your cluster. If you don't specify a name, AWS CloudFormation generates a unique physical ID for the name."
-  default     = null
+  default     = "postgres"
+  description = "class of the rds db instance"
 }
-# variable "pub_ingress" {
-#   type = list(object({ description = string, from_port = number, to_port = number, protocol = string, cidr_blocks = list(string), self = bool }))
-# }
 
-# variable "pub_egress" {
-#   type = list(object({ description = string, from_port = number, to_port = number, protocol = string, cidr_blocks = list(string) }))
-# }
+variable "db_allocated_storage" {
+  type        = number
+  default     = 20
+  description = "allocated storage size for DB in gigabytes"
+}
 
-# variable "priv_ingress" {
-#   type = list(object({ description = string, from_port = number, to_port = number, protocol = string, cidr_blocks = list(string), self = bool }))
-# }
-
-# variable "priv_egress" {
-#   type = list(object({ description = string, from_port = number, to_port = number, protocol = string, cidr_blocks = list(string) }))
-# }
-
-# variable "pub_security_group_name" {
-#   description = "Public Security Group Name"
-#   type        = string
-# }
-
-# variable "priv_security_group_name" {
-#   description = "Public Security Group Name"
-#   type        = string
-# }
 
 variable "vpc_flow_iam_set" {
   default = true
@@ -115,4 +97,52 @@ variable "vpc_flow_iam_set" {
 variable "image_tag" {
   type        = string
   description = "tag of the image"
+}
+
+variable "ecs_task_cpu" {
+  type        = number
+  description = "CPU ammount for the task"
+  default     = "256"
+}
+
+variable "ecs_task_memory" {
+  type        = number
+  description = "memory ammount for the task"
+  default     = "512"
+}
+
+variable "desired_task_count" {
+  type        = number
+  description = "Desired ECS task count for the service"
+  default     = "2"
+}
+
+variable "container_name" {
+  type        = string
+  description = "name of the application container"
+  default     = "app-container"
+}
+
+variable "container_port" {
+  type        = number
+  description = "application container port"
+  default     = 80
+}
+
+variable "task_execution_role_name" {
+  type        = string
+  description = "name of the ecs task execution role"
+  default     = "ecs-task-exec-role"
+}
+
+variable "db_restore_role_name" {
+  type        = string
+  description = "name of the db restore iam role"
+  default     = "db-restore-ec2-role"
+}
+
+variable "application_image_name" {
+  type        = string
+  description = "name of the application ecr image"
+  default     = "db-restore-ec2-role"
 }
