@@ -1,5 +1,4 @@
 import psycopg2
-import os
 from datetime import datetime
 
 from flask import Flask, request, jsonify
@@ -12,11 +11,10 @@ import config
 def get_db_conn(db_config):
     """ Create a database connection. """
     return psycopg2.connect(
-        "dbname='{}' user='{}' host='{}' password='{}'".format(
-            os.environ.get('DB_NAME', db_config["name"]),
-            os.environ.get('DB_USERNAME', db_config["user"]),
-            os.environ.get('DB_HOST', db_config["host"]),
-            os.environ.get('DB_PASSWORD', db_config["password"])
+        "dbname='{}' user='{}' host='{}'".format(
+            db_config["name"],
+            db_config["user"],
+            db_config["host"]
         )
     )
 
@@ -122,4 +120,4 @@ def create_app():
         rates = [aggregate_to_dto(row) for row in rows]
         return jsonify({"rates": rates})
 
-    return app
+    return 
