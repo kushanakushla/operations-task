@@ -1,27 +1,18 @@
-FROM python:3.10-slim as builder
+FROM python:alpine3.17
+
+
+RUN adduser -D appuser
+
+USER appuser
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc
+COPY --chown=appuser:appuser rates/*.py /app/.
 
-COPY rates/requirements.txt .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+COPY rates/requirements.txt /app/.
 
+RUN pip install --user -U gunicorn && pip install --user -Ur requirements.txt
 
-FROM python:3.10-slim
-
-WORKDIR /app
-
-RUN pip install -U gunicorn
-RUN apt update && apt install -y postgresql-client
-COPY --from=builder /app/wheels /wheels
-COPY --from=builder /app/requirements.txt .
-COPY rates/entrypoint.sh .
-RUN chmod +x entrypoint.sh
-COPY db/rates.sql /app/
-COPY rates/*.py /app/
-
-RUN pip install --no-cache /wheels/*
+ENV PATH="/home/appuser/.local/bin:${PATH}"
 
 ENTRYPOINT ["./entrypoint.sh"]
