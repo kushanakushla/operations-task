@@ -112,7 +112,7 @@ def create_app():
                 "date_to": date_to,
                 "orig_code": orig_code,
                 "dest_code": dest_code,
-            },
+            }
         )
 
         rates = [aggregate_to_dto(row) for row in rows]
