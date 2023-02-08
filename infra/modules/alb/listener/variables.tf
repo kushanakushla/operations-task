@@ -14,12 +14,12 @@ variable "protocol" {
 variable "ssl_policy" {
   type        = string
   description = "SSL policy to be used with the listener"
-  default = ""
+  default     = ""
 }
 variable "certificate_arn" {
   type        = string
   description = "ACM SSL Certificate ARN"
-  default = ""
+  default     = ""
 }
 
 variable "target_group_arn" {

@@ -9,5 +9,5 @@ resource "aws_lb" "alb" {
 
   enable_deletion_protection = var.enable_deletion_protection
   drop_invalid_header_fields = true
-  tags = var.tags
+  tags                       = var.tags
 }

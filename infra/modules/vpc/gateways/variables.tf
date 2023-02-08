@@ -1,10 +1,10 @@
 variable "num_az" {
-  type = number
+  type        = number
   description = "Number of Availability Zones"
 }
 
 variable "tags" {
-  type = map(string)
+  type        = map(string)
   description = "resource tag mapping"
 }
 

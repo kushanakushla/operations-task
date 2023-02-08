@@ -1,13 +1,13 @@
 variable "vpc_id" {}
 
 variable "vpc_flow_iam_set" {
-  default = true
-  type    = bool
+  default     = true
+  type        = bool
   description = "set true/false to enable disable creation of iam roles and policies for vpc flow logs"
 }
 
 variable "tags" {
-  type = map(string)
+  type        = map(string)
   description = "resource tag mapping"
 }
 

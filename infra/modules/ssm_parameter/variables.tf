@@ -1,4 +1,4 @@
-variable "secret_string" {
+variable "name" {
   default     = ""
   type        = string
   description = "Map of key pair values for secret"
@@ -9,7 +9,12 @@ variable "tags" {
   description = "resource tag mapping"
 }
 
-variable "name" {
+variable "type" {
   type        = string
-  description = "Name of the secret"
+  description = "type of the ssm parameter"
+}
+
+variable "value" {
+  type        = string
+  description = "SSM parameter value"
 }

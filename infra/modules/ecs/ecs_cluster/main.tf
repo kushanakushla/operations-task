@@ -19,5 +19,5 @@ module "log_group" {
 
   name      = "/aws/ecs/containerinsights/${aws_ecs_cluster.cluster.name}/performance"
   retention = var.container_insights_log_group_retention
-  tags = var.tags
+  tags      = var.tags
 }

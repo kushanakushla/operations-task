@@ -9,6 +9,6 @@ variable "vpc_name" {
 }
 
 variable "tags" {
-  type = map(string)
+  type        = map(string)
   description = "resource tag mapping"
 }

@@ -30,12 +30,12 @@ variable "desired_count" {
 
 variable "subnets" {
   description = "The network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own elastic network interface, and it is not supported for other network modes."
-  type = list(string)
+  type        = list(string)
 }
 
 variable "security_groups" {
   description = "The network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own elastic network interface, and it is not supported for other network modes."
-  type = list(string)
+  type        = list(string)
 }
 
 variable "target_group_arn" {
@@ -50,7 +50,7 @@ variable "container_port" {
 
 variable "assign_public_ip" {
   type        = bool
-  default = false
+  default     = false
   description = "The name of your service. Up to 255 letters (uppercase and lowercase), numbers, and hyphens are allowed. Service names must be unique within a cluster, but you can have similarly named services in multiple clusters within a Region or across multiple Regions."
 }
 

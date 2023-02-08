@@ -14,8 +14,8 @@ variable "vpc_azs" {
 }
 
 variable "tags" {
-  type = map(string)
-   description = "resource tag mapping"
+  type        = map(string)
+  description = "resource tag mapping"
 }
 
 variable "vpc_name" {
@@ -34,7 +34,7 @@ variable "vpc_id" {
 }
 
 variable "map_public_ip_on_launch" {
-  default = false
-  type    = bool
+  default     = false
+  type        = bool
   description = "Enable public Ip for subnets"
 }
