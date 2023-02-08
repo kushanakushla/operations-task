@@ -122,4 +122,4 @@ def create_app():
         rates = [aggregate_to_dto(row) for row in rows]
         return jsonify({"rates": rates})
 
-    return 
+    return app

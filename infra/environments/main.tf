@@ -434,14 +434,14 @@ module "postgres_db" {
 
 module "rds_posrgres_cred" {
   source        = "../modules/secret"
-  name          = "testrds-db-postgres10"
+  name          = "testrds-db-postgres12"
   secret_string = random_password.postgres_db_password.result
   tags          = local.tags
 }
 
 module "rds_postgres_endpoint" {
   source        = "../modules/secret"
-  name          = "testrds-db-postgres11"
+  name          = "testrds-db-postgres13"
   secret_string = module.postgres_db.rds.address
   tags          = local.tags
 }
