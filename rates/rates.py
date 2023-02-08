@@ -1,4 +1,5 @@
 import psycopg2
+import os
 from datetime import datetime
 
 from flask import Flask, request, jsonify
@@ -9,12 +10,13 @@ import config
 
 
 def get_db_conn(db_config):
-    """ Create a database connection. """
+    """Create a database connection."""
     return psycopg2.connect(
-        "dbname='{}' user='{}' host='{}'".format(
-            db_config["name"],
-            db_config["user"],
-            db_config["host"]
+        "dbname='{}' user='{}' host='{}' password='{}'".format(
+            os.environ.get("DB_NAME", db_config["name"]),
+            os.environ.get("DB_USERNAME", db_config["user"]),
+            os.environ.get("DB_HOST", db_config["host"]),
+            os.environ.get("DB_PASSWORD", db_config["password"]),
         )
     )
 
@@ -50,7 +52,7 @@ def create_app():
         return dto
 
     def parse_iso_date(value):
-        """ Try to parse a value into a datetime """
+        """Try to parse a value into a datetime"""
         try:
             datetime.strptime(value, "%Y-%m-%d")
             return value
@@ -59,15 +61,13 @@ def create_app():
 
     @app.route("/")
     def hello_world():
-        return jsonify({
-            "message": "Hello world!"
-        })
+        return jsonify({"message": "Hello world!"})
 
     @app.route("/rates", methods=["GET"])
     def get_rates():
         """
-            Get average price per day in a timespan using portcode or region
-            slugs.
+        Get average price per day in a timespan using portcode or region
+        slugs.
         """
         orig_code = request.args.get("orig_code")
         dest_code = request.args.get("dest_code")
@@ -77,9 +77,7 @@ def create_app():
         if not date_from or not date_to:
             raise BadRequest("Invalid date arguments")
         if orig_code and dest_code:
-            return get_rates_using_codes(
-                date_from, date_to, orig_code, dest_code
-            )
+            return get_rates_using_codes(date_from, date_to, orig_code, dest_code)
         raise BadRequest("Invalid location arguments")
 
     def get_rates_using_codes(date_from, date_to, orig_code, dest_code):
@@ -113,8 +111,8 @@ def create_app():
                 "date_from": date_from,
                 "date_to": date_to,
                 "orig_code": orig_code,
-                "dest_code": dest_code
-            }
+                "dest_code": dest_code,
+            },
         )
 
         rates = [aggregate_to_dto(row) for row in rows]
