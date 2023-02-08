@@ -111,7 +111,7 @@ def create_app():
                 "date_from": date_from,
                 "date_to": date_to,
                 "orig_code": orig_code,
-                "dest_code": dest_code,
+                "dest_code": dest_code
             }
         )
 
