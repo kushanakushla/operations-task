@@ -43,6 +43,10 @@ locals {
           {
             "name": "POSTGRES_USER",
             "value": "postgres"
+          },
+          {
+            "name": "PO",
+            "value": "postgres"
           }
         ]
     }
@@ -92,6 +96,20 @@ data "aws_iam_policy_document" "policy_document_secret_manager_access" {
   }
 }
 
+### Fetch latest amazon-linux ami ID
+data "aws_ami" "amazon-2" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-ebs"]
+  }
+  owners = ["amazon"]
+}
+
+# data "aws_instance" "foo" {
+#   instance_id = module.bastion_instance.ec2_instance.
+# }
 
 ### Generate a random password for RDS DB Instance
 resource "random_password" "postgres_db_password" {
@@ -267,6 +285,14 @@ module "db_security_group" {
         source_security_group_id = module.application_security_group.sg_id
       }
     ]
+    cidr_block_ingress_rules = [
+      {
+        from_port   = 5432,
+        to_port     = 5432,
+        protocol    = "tcp",
+        cidr_blocks = ["${var.db_subnets_cidr[0]}"]
+      }
+    ]
     cidr_block_egress_rules = [
       {
         from_port   = 0,
@@ -332,7 +358,7 @@ module "cluster" {
 module "ecs_task" {
   source = "../modules/ecs/ecs_task"
 
-  family = "test-task-def"
+  family                = "test-task-def"
   task_role_arn         = module.iam_role.iam_role.arn
   task_exec_role_arn    = module.iam_role.iam_role.arn
   container_definitions = local.container_definition
@@ -344,17 +370,17 @@ module "ecs_task" {
 module "ecs_service" {
   source = "../modules/ecs/ecs_service"
 
-  name                    = "test-app-service"
-  cluster_arn                 = module.cluster.cluster.arn
-  task_definition_family = "test-task-def"
+  name                     = "test-app-service"
+  cluster_arn              = module.cluster.cluster.arn
+  task_definition_family   = "test-task-def"
   task_definition_revision = module.ecs_task.task_definition.revision
-  desired_count   = "2"
-  target_group_arn = module.alb_tg.target_group.arn
-  container_name   = "testapp"
-  container_port   = "3000"
-  subnets         = module.private_subnets.subnet_ids
-  security_groups = [module.application_security_group.sg_id]
-  tags                  = local.tags
+  desired_count            = "2"
+  target_group_arn         = module.alb_tg.target_group.arn
+  container_name           = "testapp"
+  container_port           = "3000"
+  subnets                  = module.private_subnets.subnet_ids
+  security_groups          = [module.application_security_group.sg_id]
+  tags                     = local.tags
 }
 
 
@@ -373,6 +399,20 @@ module "iam_role" {
   ]
   tags = local.tags
 }
+
+module "bastion_ec2_instance_profile" {
+  source = "../modules/iam_role"
+
+  role_name   = "ec2-bastion-instance-profile"
+  description = "This is Test Terraform IAM Role for EC2 bastion Instance"
+  assume_role_identifiers = [
+    "ec2.amazonaws.com"
+  ]
+  managed_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+  tags             = local.tags
+}
+
+
 
 module "db_subnet_group" {
   source = "../modules/rds/subnet_group"
@@ -401,21 +441,17 @@ module "postgres_db" {
 }
 
 module "rds_posrgres_cred" {
-  source = "../modules/secret"
-  name   = "testrds-db-postgres2"
-  secret_string = {
-    POSTGRES_PASSWORD = random_password.postgres_db_password.result
-  }
-  tags = local.tags
+  source        = "../modules/secret"
+  name          = "testrds-db-postgres10"
+  secret_string = random_password.postgres_db_password.result
+  tags          = local.tags
 }
 
 module "rds_postgres_endpoint" {
-  source = "../modules/secret"
-  name   = "testrds-db-postgres3"
-  secret_string = {
-    POSTGRES_HOST     = module.postgres_db.rds.endpoint
-  }
-  tags = local.tags
+  source        = "../modules/secret"
+  name          = "testrds-db-postgres11"
+  secret_string = module.postgres_db.rds.address
+  tags          = local.tags
 }
 
 module "repo" {
@@ -446,5 +482,59 @@ module "app_log_group" {
 
   name      = "app-log-group"
   retention = 7
-  tags = local.tags
+  tags      = local.tags
 }
+
+module "bastion_ssh_keypair" {
+  source   = "../modules/ssh_keypair"
+  key_name = "bastion-test-keypair"
+  tags     = local.tags
+}
+
+module "ssm_parameter_bastion_ssh_keypair" {
+  source = "../modules/ssm_parameter"
+  name   = "/SSHKEY/BASTION"
+  type   = "SecureString"
+  value  = module.bastion_ssh_keypair.key.private_key_pem
+  tags   = local.tags
+}
+
+module "bastion_instance" {
+
+  depends_on = [
+    module.postgres_db
+  ]
+  source        = "../modules/ec2"
+  ami           = data.aws_ami.amazon-2.image_id
+  instance_type = "t2.micro"
+  tags          = local.tags
+  key_name      = module.bastion_ssh_keypair.keypair.key_name
+
+  volume_type = "gp2"
+  volume_size = "20"
+
+  vpc_security_group_ids = [module.db_security_group.sg_id]
+  subnet_id              = module.db_subnets.subnet_ids[0]
+  iam_instance_profile   = aws_iam_instance_profile.test_profile.name
+  user_data              = <<EOF
+  #!/bin/bash
+  yum update -y
+  amazon-linux-extras enable postgresql14
+  yum install postgresql -y
+  wget https://raw.githubusercontent.com/kushanakushla/operations-task/master/db/rates.sql
+  export PGPASSWORD=${random_password.postgres_db_password.result}
+  psql -U postgres -h ${module.postgres_db.rds.address} -d rates -f rates.sql
+  EOF
+
+}
+
+resource "aws_iam_instance_profile" "test_profile" {
+  name = "bastion-instance-profile"
+  role = module.bastion_ec2_instance_profile.iam_role.name
+}
+
+
+
+
+# export PGPASSSWORD=H82rAOPofEgy0ckG
+# psql -U postgres-h testrds-dev-rds.cnnp9bbigtv1.us-east-1.rds.amazonaws.com -d rates -f rates.sql

@@ -46,3 +46,8 @@ output "image_digest_exsists" {
   description = ""
   value       = jsondecode(data.external.check_image_exsists.result.success)
 }
+
+output "ec2_instance_id" {
+  description = ""
+  value       = module.bastion_instance.ec2_instance.arn
+}
