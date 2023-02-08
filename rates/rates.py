@@ -1,4 +1,5 @@
 import psycopg2
+import os
 from datetime import datetime
 
 from flask import Flask, request, jsonify
