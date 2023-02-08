@@ -1,1 +1,1 @@
-DB = {"name": "", "user": "", "host": "", "passwrd": ""}
+DB = {"name": "", "user": "", "host": "", "password": ""}

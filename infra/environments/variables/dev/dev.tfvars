@@ -27,4 +27,4 @@ tags = {
 tg_name      = "application-tg"
 target_type  = "ip"
 cluster_name = "ecs-app-test"
-image_tag    = "12.0.0"
+image_tag    = "13.0.0"
