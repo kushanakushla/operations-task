@@ -1,5 +1,1 @@
-DB = {
-    "name": "postgres",
-    "user": "postgres",
-    "host": "localhost"
-}
+DB = {"name": "", "user": "", "host": "", "passwrd": ""}

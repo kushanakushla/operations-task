@@ -23,29 +23,21 @@ locals {
         ],
         "secrets": [
           {
-            "name": "POSTGRES_HOST",
+            "name": "DB_HOST",
             "valueFrom": "${module.rds_postgres_endpoint.secret.arn}"
           },
           {
-            "name": "POSTGRES_PASSWORD",
-            "valueFrom": "${module.rds_posrgres_cred.secret.arn}"
-          },
-          {
-            "name": "PGPASSWORD",
+            "name": "DB_PASSWORD",
             "valueFrom": "${module.rds_posrgres_cred.secret.arn}"
           }
         ],
         "environment": [
           {
-            "name": "POSTGRES_DB",
+            "name": "DB_NAME",
             "value": "rates"
           },
           {
-            "name": "POSTGRES_USER",
-            "value": "postgres"
-          },
-          {
-            "name": "PO",
+            "name": "DB_USERNAME",
             "value": "postgres"
           }
         ]
