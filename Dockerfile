@@ -7,9 +7,9 @@ USER appuser
 
 WORKDIR /app
 
-COPY --chown=appuser:appuser rates/*.py /app/
+COPY --chown=appuser:appuser rates/* /app/
 
-COPY rates/requirements.txt /app/
+RUN chmod +x entrypoint.sh
 
 RUN pip install --user -U gunicorn && pip install --user -Ur requirements.txt
 
