@@ -1,0 +1,24 @@
+FROM python:3.10-slim
+
+ARG USER=appuser
+ARG USER_ID=1000
+ARG USER_GROUP=appgrp
+ARG USER_GROUP_ID=1000
+ARG USER_HOME=/home/${USER}
+
+WORKDIR ${USER_HOME}
+
+RUN \
+    groupadd --system -g ${USER_GROUP_ID} ${USER_GROUP} \
+    && useradd --system --create-home --home-dir ${USER_HOME} --no-log-init -g ${USER_GROUP_ID} -u ${USER_ID} ${USER}
+
+USER ${USER}
+COPY --chown=${USER}:${USER_GROUP} rates/* ${USER_HOME}/
+
+RUN chmod +x entrypoint.sh
+
+RUN pip install --user -U --no-cache-dir gunicorn && pip install --user --no-cache-dir -Ur requirements.txt
+
+ENV PATH="${USER_HOME}.local/bin:${PATH}"
+
+ENTRYPOINT ["./entrypoint.sh"]

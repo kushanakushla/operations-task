@@ -1,18 +1,20 @@
-FROM python:alpine3.17
+FROM python:3.10-slim
 
+ARG USER=appuser
+ARG USER_HOME=/home/${USER}
 
-RUN adduser -D appuser
+RUN useradd ${USER} -m
 
-USER appuser
+USER ${USER}
 
-WORKDIR /app
+WORKDIR ${USER_HOME}
 
-COPY --chown=appuser:appuser rates/* /app/
+COPY --chown=${USER}:${USER} rates/* ${USER_HOME}/
 
 RUN chmod +x entrypoint.sh
 
-RUN pip install --user -U gunicorn && pip install --user -Ur requirements.txt
+RUN pip install --user -U --no-cache-dir gunicorn && pip install --user --no-cache-dir -Ur requirements.txt
 
-ENV PATH="/home/appuser/.local/bin:${PATH}"
+ENV PATH="${USER_HOME}.local/bin:${PATH}"
 
 ENTRYPOINT ["./entrypoint.sh"]

@@ -300,6 +300,9 @@ module "ecs_task_def" {
 
 ### Create ECS Service for the Application
 module "ecs_service" {
+  depends_on = [
+    module.postgres_db
+  ]
   source = "../modules/ecs/ecs_service"
 
   name                     = var.application
@@ -355,13 +358,19 @@ module "repo" {
 
 ### Build and Push application docker image
 resource "docker_registry_image" "app" {
-
   count = jsondecode(data.external.check_image_exsists.result.success) == true ? 0 : 1
-  name  = "${module.repo.repo.repository_url}:${var.image_tag}"
-
+  name  = docker_image.app.name
   build {
     context    = "../../"
     dockerfile = "Dockerfile"
+  }
+}
+
+resource "docker_image" "app" {
+  count = jsondecode(data.external.check_image_exsists.result.success) == true ? 0 : 1
+  name  = "${module.repo.repo.repository_url}:${var.image_tag}"
+  build {
+    context = "../../"
   }
 }
 
