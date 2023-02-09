@@ -264,7 +264,7 @@ module "postgres_db" {
 ### Create RDS db password secret
 module "rds_postgres_cred" {
   source        = "../modules/secret"
-  name          = "${var.application}-rds-db-cred"
+  name          = "${var.application}-rds-db-cred1"
   secret_string = random_password.postgres_db_password.result
   tags          = local.tags
 }
@@ -272,7 +272,7 @@ module "rds_postgres_cred" {
 ### Create RDS db address secret
 module "rds_postgres_endpoint" {
   source        = "../modules/secret"
-  name          = "${var.application}-rds-db-address"
+  name          = "${var.application}-rds-db-address1"
   secret_string = module.postgres_db.rds.address
   tags          = local.tags
 }
