@@ -11,13 +11,13 @@ locals {
               "options": {
                   "awslogs-group": "${module.app_log_group.log_group_name}",
                   "awslogs-region": "${var.region}",
-                  "awslogs-stream-prefix": "${var.container_port}"
+                  "awslogs-stream-prefix": "${var.container_name}"
               }
             },
           "portMappings": [
               {
-                  "containerPort": "${var.container_port}",
-                  "hostPort": "${var.container_port}",
+                  "containerPort": ${var.container_port},
+                  "hostPort": ${var.container_port},
                   "protocol": "tcp"
               }
           ],

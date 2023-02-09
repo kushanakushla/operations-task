@@ -369,24 +369,9 @@ resource "docker_registry_image" "app" {
 module "app_log_group" {
   source = "../modules/cloudwatch_log_group"
 
-  name      = module.ecs_service.service.name
+  name      = "sssssss" #module.ecs_service.service.name
   retention = 7
   tags      = local.tags
-}
-
-
-module "bastion_ssh_keypair" {
-  source   = "../modules/ssh_keypair"
-  key_name = "bastion-test-keypair"
-  tags     = local.tags
-}
-
-module "ssm_parameter_bastion_ssh_keypair" {
-  source = "../modules/ssm_parameter"
-  name   = "/SSHKEY/BASTION"
-  type   = "SecureString"
-  value  = module.bastion_ssh_keypair.key.private_key_pem
-  tags   = local.tags
 }
 
 module "db_restore_instance" {
@@ -398,7 +383,7 @@ module "db_restore_instance" {
   ami           = data.aws_ami.amazon-2.image_id
   instance_type = "t2.micro"
   tags          = local.tags
-  key_name      = module.bastion_ssh_keypair.keypair.key_name
+  # key_name      = module.bastion_ssh_keypair.keypair.key_name
 
   volume_type = "gp2"
   volume_size = "20"
@@ -420,5 +405,5 @@ module "db_restore_instance" {
 
 resource "aws_iam_instance_profile" "db_restore_ec2_instance" {
   name = var.db_restore_role_name
-  role = module.bastion_ec2_instance_profile.iam_role.name
+  role = module.db_restore_ec2_instance_role.iam_role.name
 }

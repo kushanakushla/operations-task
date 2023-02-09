@@ -13,6 +13,7 @@ variable "instance_type" {
 variable "key_name" {
   type        = string
   description = "ssh key name"
+  default     = ""
 }
 
 variable "volume_type" {

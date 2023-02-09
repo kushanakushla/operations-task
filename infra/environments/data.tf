@@ -1,6 +1,6 @@
-# data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "current" {}
 
-# data "aws_ecr_authorization_token" "token" {}
+data "aws_ecr_authorization_token" "token" {}
 
 data "aws_iam_policy_document" "policy_document_ecr_access" {
   statement {
@@ -53,8 +53,4 @@ data "aws_ami" "amazon-2" {
 
 data "external" "check_image_exsists" {
   program = ["/bin/bash", "${path.module}/script.sh", "testapp2-dev", var.image_tag]
-}
-
-data "aws_ecs_task_definition" "app_task_definition" {
-  task_definition = aws_ecs_task_definition.mongo.family
 }
