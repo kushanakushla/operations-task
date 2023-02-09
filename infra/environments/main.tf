@@ -331,7 +331,7 @@ module "ecs_task_execution_role" {
     data.aws_iam_policy_document.policy_document_ecr_access.json,
     data.aws_iam_policy_document.policy_document_secret_manager_access.json,
     data.aws_iam_policy_document.policy_document_cwlogs.json,
-    data.aws_iam_policy_document.policy_document_ecr_auth
+    data.aws_iam_policy_document.policy_document_ecr_auth.json
   ]
   tags = local.tags
 }
