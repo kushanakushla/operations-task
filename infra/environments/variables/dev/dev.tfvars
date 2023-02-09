@@ -22,7 +22,7 @@ pub_sub_map_public_ip_on_launch = "true"
 ## If creating multiple VPCs on same account set this to false in other vpc creation configs 
 vpc_flow_iam_set = true
 
-image_tag   = "30.0.0"
+image_tag   = "31"
 application = "xeneta"
 
 db_username          = "postgres"
