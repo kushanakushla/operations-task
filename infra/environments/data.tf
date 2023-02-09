@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "policy_document_ecr_access" {
     ]
     effect = "Allow"
     resources = [
-      "${module.repo.repo.repository_url}"
+      "${module.repo.repo.arn}/*"
     ]
 
   }
