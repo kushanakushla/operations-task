@@ -358,12 +358,9 @@ module "repo" {
 
 ### Build and Push application docker image
 resource "docker_registry_image" "app" {
-  count = jsondecode(data.external.check_image_exsists.result.success) == true ? 0 : 1
-  name  = docker_image.app.name
-  build {
-    context    = "../../"
-    dockerfile = "Dockerfile"
-  }
+  count         = jsondecode(data.external.check_image_exsists.result.success) == true ? 0 : 1
+  name          = docker_image.app[count.index].name
+  keep_remotely = true
 }
 
 resource "docker_image" "app" {
