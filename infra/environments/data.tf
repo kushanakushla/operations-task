@@ -35,7 +35,12 @@ data "aws_iam_policy_document" "policy_document_cwlogs" {
 data "aws_iam_policy_document" "policy_document_secret_manager_access" {
   statement {
     actions = [
-      "secretsmanager:GetSecretValue"
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:GetResourcePolicy",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:ListSecretVersionIds",
+      "secretsmanager:ListSecrets"
     ]
     effect = "Allow"
     resources = [
