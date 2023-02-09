@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "repo" {
-  name                 = format("%s-%s", var.name, var.tags["Environment"])
+  name                 = var.name
   image_tag_mutability = var.image_tag_mutability
   force_delete         = true
   tags                 = var.tags

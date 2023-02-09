@@ -38,4 +38,4 @@ container_port     = "3000"
 
 task_execution_role_name = "xeneta-task-exec-role-dev"
 db_restore_role_name     = "db-restore-ec2-role-dev"
-application_image_name   = "rates-app"
+application_image_name   = "rates-app-dev"

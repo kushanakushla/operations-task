@@ -1,3 +1,4 @@
+### Terraform locals configiration
 locals {
   tags                 = merge(var.global_tags, var.tags)
   aws_ecr_url          = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
