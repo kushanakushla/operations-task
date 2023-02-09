@@ -9,17 +9,34 @@ data "aws_iam_policy_document" "policy_document_ecr_access" {
     actions = [
       "ecr:BatchGetImage",
       "ecr:GetDownloadUrlForLayer",
-      "ecr:GetAuthorizationToken"
-
     ]
     effect = "Allow"
     resources = [
       "${module.repo.repo.arn}"
     ]
-
+  statement {
+    actions = [
+      "ecr:GetAuthorizationToken"
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
   }
 }
 
+# data "aws_iam_policy_document" "policy_document_ecr_auth" {
+#   statement {
+#     actions = [
+#       "ecr:GetDownloadUrlFor",
+#     ]
+#     effect = "Allow"
+#     resources = [
+#       "${module.repo.repo.arn}"
+#     ]
+
+#   }
+# }
 data "aws_iam_policy_document" "policy_document_cwlogs" {
   statement {
     actions = [
