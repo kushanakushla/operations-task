@@ -1,10 +1,10 @@
 name: Execute Linux Commands
 
 on:
-  - workflow_dispatch
-  - push:
-      branches:
-        - feature/aws_deploy
+  push:
+    branches:
+      - feature/aws_deploy
+  workflow_dispatch
 
 jobs:
   build:
