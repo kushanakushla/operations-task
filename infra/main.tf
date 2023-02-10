@@ -264,7 +264,7 @@ module "postgres_db" {
 ### Create RDS db password secret
 module "rds_postgres_cred" {
   source        = "./modules/secret"
-  name          = "${var.application}-rds-db-cred2"
+  name          = "${var.application}-rds-db-cred3"
   secret_string = random_password.postgres_db_password.result
   tags          = local.tags
 }
@@ -272,7 +272,7 @@ module "rds_postgres_cred" {
 ### Create RDS db address secret
 module "rds_postgres_endpoint" {
   source        = "./modules/secret"
-  name          = "${var.application}-rds-db-address2"
+  name          = "${var.application}-rds-db-address3"
   secret_string = module.postgres_db.rds.address
   tags          = local.tags
 }
@@ -368,7 +368,7 @@ resource "docker_image" "app" {
   count = jsondecode(data.external.check_image_exsists.result.success) == true ? 0 : 1
   name  = "${module.repo.repo.repository_url}:${var.image_tag}"
   build {
-    context = "../../"
+    context = "../"
   }
 }
 
@@ -390,7 +390,6 @@ module "db_restore_instance" {
   ami           = data.aws_ami.amazon-2.image_id
   instance_type = "t2.micro"
   tags          = local.tags
-  # key_name      = module.bastion_ssh_keypair.keypair.key_name
 
   volume_type = "gp2"
   volume_size = "20"
