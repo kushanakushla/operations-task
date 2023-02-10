@@ -3,7 +3,7 @@ name: Execute Linux Commands
 on:
   push:
     branches:
-      - main
+      - feature/aws_deploy
 
 jobs:
   build:
