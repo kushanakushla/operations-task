@@ -14,10 +14,10 @@ resource "aws_ecs_cluster" "cluster" {
   tags = var.tags
 }
 
-module "log_group" {
-  source = "../../cloudwatch_log_group"
+# module "log_group" {
+#   source = "../../cloudwatch_log_group"
 
-  name      = "/aws/ecs/containerinsights/${aws_ecs_cluster.cluster.name}/performance"
-  retention = var.container_insights_log_group_retention
-  tags      = var.tags
-}
+#   name      = "/aws/ecs/containerinsights/${aws_ecs_cluster.cluster.name}/performance"
+#   retention = var.container_insights_log_group_retention
+#   tags      = var.tags
+# }
