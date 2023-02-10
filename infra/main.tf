@@ -376,7 +376,7 @@ resource "docker_image" "app" {
 module "app_log_group" {
   source = "./modules/cloudwatch_log_group"
 
-  name      = module.ecs_service.service.name
+  name      = var.ecs_service_name
   retention = 7
   tags      = local.tags
 }

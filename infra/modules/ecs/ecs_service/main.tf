@@ -1,5 +1,5 @@
 resource "aws_ecs_service" "service" {
-  name            = var.name
+  name            = format("%s-%s-service", var.name, var.tags["Environment"])
   cluster         = var.cluster_arn
   task_definition = format("%s:%s", var.task_definition_family, var.task_definition_revision)
   desired_count   = var.desired_count

@@ -144,5 +144,11 @@ variable "db_restore_role_name" {
 variable "application_image_name" {
   type        = string
   description = "name of the application ecr image"
-  default     = "db-restore-ec2-role"
+  default     = "Name of the application image"
+}
+
+variable "ecs_service_name" {
+  type        = string
+  description = "name of the application service"
+  default     = "app-service"
 }
