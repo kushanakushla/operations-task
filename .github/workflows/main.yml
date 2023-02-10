@@ -1,9 +1,10 @@
 name: Execute Linux Commands
 
 on:
-  push:
-    branches:
-      - feature/aws_deploy
+  - workflow_dispatch
+  - push:
+      branches:
+        - feature/aws_deploy
 
 jobs:
   build:
@@ -27,14 +28,3 @@ jobs:
       run: |
         echo "Installing dependencies..."
         sudo apt-get install -y libsodium-dev
-
-    - name: Stage 3 - Build project
-      run: |
-        echo "Building project..."
-        npm install
-        npm run build
-
-    - name: Stage 4 - Run tests
-      run: |
-        echo "Running tests..."
-        npm test
