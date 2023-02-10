@@ -1,4 +1,4 @@
-name: Execute Linux Commands
+name: Deploy Application
 
 on:
   workflow_dispatch:
