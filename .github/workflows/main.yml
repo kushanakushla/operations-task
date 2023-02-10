@@ -6,7 +6,29 @@ on:
       - feature/aws_deploy
 
 jobs:
-  build:
+  terraforminit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Execute commands
+      run: |
+        echo "Running command 1"
+        echo "executing terraform plan"
+  terraformplan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Execute commands
+      run: |
+        echo "Running command 1"
+        echo "executing terraform plan"
+  terraformapply:
     runs-on: ubuntu-latest
 
     steps:
