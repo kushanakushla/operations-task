@@ -1,6 +1,6 @@
 ### Create VPC
 module "vpc" {
-  source = "../modules/vpc/vpc"
+  source = "./modules/vpc/vpc"
 
   vpc_cidr = var.vpc_cidr
   vpc_name = var.application
@@ -9,7 +9,7 @@ module "vpc" {
 
 ### Create Public Subnets
 module "public_subnets" {
-  source = "../modules/vpc/subnets"
+  source = "./modules/vpc/subnets"
 
   region                  = var.region
   vpc_azs                 = var.vpc_azs
@@ -23,7 +23,7 @@ module "public_subnets" {
 
 ### Create Private Subnets
 module "private_subnets" {
-  source = "../modules/vpc/subnets"
+  source = "./modules/vpc/subnets"
 
   region       = var.region
   vpc_azs      = var.vpc_azs
@@ -36,7 +36,7 @@ module "private_subnets" {
 
 ### Create DB Subnets
 module "db_subnets" {
-  source = "../modules/vpc/subnets"
+  source = "./modules/vpc/subnets"
 
   region       = var.region
   vpc_azs      = var.vpc_azs
@@ -49,7 +49,7 @@ module "db_subnets" {
 
 ### Create NAT & Internet Gateways
 module "gateways" {
-  source = "../modules/vpc/gateways"
+  source = "./modules/vpc/gateways"
 
   vpc_name          = var.application
   vpc_id            = module.vpc.vpc.id
@@ -61,7 +61,7 @@ module "gateways" {
 
 ### Create Route Tables
 module "routes" {
-  source = "../modules/vpc/routes"
+  source = "./modules/vpc/routes"
 
   vpc_id             = module.vpc.vpc.id
   vpc_name           = var.application
@@ -77,7 +77,7 @@ module "routes" {
 
 ### Enable VPC Flow Logs for the VPC
 module "vpc_flow_logs" {
-  source = "../modules/vpc/vpc_flow"
+  source = "./modules/vpc/vpc_flow"
 
   vpc_id           = module.vpc.vpc.id
   vpc_flow_iam_set = var.vpc_flow_iam_set
@@ -87,7 +87,7 @@ module "vpc_flow_logs" {
 
 ### Create Security Group for the Application Load Balancer
 module "alb_security_group" {
-  source = "../modules/security_group"
+  source = "./modules/security_group"
   name   = "${var.application}-alb-sg"
 
   security_group = {
@@ -121,7 +121,7 @@ module "alb_security_group" {
 
 ### Create Security Group for Application ECS Tasks
 module "application_security_group" {
-  source = "../modules/security_group"
+  source = "./modules/security_group"
 
   name = "${var.application}-application-sg"
   security_group = {
@@ -150,7 +150,7 @@ module "application_security_group" {
 
 #### Create Security Group for the RDS Database
 module "db_security_group" {
-  source = "../modules/security_group"
+  source = "./modules/security_group"
 
   name = "${var.application}-db-sg"
   security_group = {
@@ -186,7 +186,7 @@ module "db_security_group" {
 
 ### Create Target Group for ECS Tasks
 module "alb_tg" {
-  source = "../modules/alb/target_group_alb"
+  source = "./modules/alb/target_group_alb"
 
   name        = var.application
   port        = var.container_port
@@ -207,7 +207,7 @@ module "alb_tg" {
 
 ### Create Application Load Balancer
 module "alb" {
-  source          = "../modules/alb/application_load_balancer"
+  source          = "./modules/alb/application_load_balancer"
   name            = var.application
   subnets         = module.public_subnets.subnet_ids
   security_groups = [module.alb_security_group.sg_id]
@@ -216,7 +216,7 @@ module "alb" {
 
 ### Create Application Load Balancer Listeners
 module "alb_listener" {
-  source = "../modules/alb/listener"
+  source = "./modules/alb/listener"
 
   load_balancer_arn = module.alb.alb.arn
   port              = "80"
@@ -235,7 +235,7 @@ resource "random_password" "postgres_db_password" {
 
 ### Create RDS DB subnet group
 module "db_subnet_group" {
-  source = "../modules/rds/subnet_group"
+  source = "./modules/rds/subnet_group"
 
   name        = var.application
   description = "RDS Postgres DB subnet group for rates appplication"
@@ -245,7 +245,7 @@ module "db_subnet_group" {
 
 ### Create RDS postgres DB Instance
 module "postgres_db" {
-  source = "../modules/rds/rds_instance"
+  source = "./modules/rds/rds_instance"
 
   identifier             = var.application
   engine                 = "postgres"
@@ -263,7 +263,7 @@ module "postgres_db" {
 
 ### Create RDS db password secret
 module "rds_postgres_cred" {
-  source        = "../modules/secret"
+  source        = "./modules/secret"
   name          = "${var.application}-rds-db-cred2"
   secret_string = random_password.postgres_db_password.result
   tags          = local.tags
@@ -271,7 +271,7 @@ module "rds_postgres_cred" {
 
 ### Create RDS db address secret
 module "rds_postgres_endpoint" {
-  source        = "../modules/secret"
+  source        = "./modules/secret"
   name          = "${var.application}-rds-db-address2"
   secret_string = module.postgres_db.rds.address
   tags          = local.tags
@@ -279,7 +279,7 @@ module "rds_postgres_endpoint" {
 
 ### Create ECS Cluster
 module "cluster" {
-  source = "../modules/ecs/ecs_cluster"
+  source = "./modules/ecs/ecs_cluster"
 
   cluster_name                           = var.application
   container_insights_log_group_retention = 7
@@ -288,7 +288,7 @@ module "cluster" {
 
 ### Create ECS Task Definition
 module "ecs_task_def" {
-  source                = "../modules/ecs/ecs_task_def"
+  source                = "./modules/ecs/ecs_task_def"
   cpu                   = var.ecs_task_cpu
   memory                = var.ecs_task_memory
   family                = var.application
@@ -303,7 +303,7 @@ module "ecs_service" {
   depends_on = [
     module.postgres_db
   ]
-  source = "../modules/ecs/ecs_service"
+  source = "./modules/ecs/ecs_service"
 
   name                     = var.application
   cluster_arn              = module.cluster.cluster.arn
@@ -320,7 +320,7 @@ module "ecs_service" {
 
 ### Create ECS task execution IAM Role
 module "ecs_task_execution_role" {
-  source = "../modules/iam_role"
+  source = "./modules/iam_role"
 
   role_name   = var.task_execution_role_name
   description = "This is ecs task exec role for the application"
@@ -338,7 +338,7 @@ module "ecs_task_execution_role" {
 
 ### Create Bastion IAM Role
 module "db_restore_ec2_instance_role" {
-  source = "../modules/iam_role"
+  source = "./modules/iam_role"
 
   role_name   = var.db_restore_role_name
   description = "This is IAM role used with db restore ec2"
@@ -351,7 +351,7 @@ module "db_restore_ec2_instance_role" {
 
 ### Create ECR Repo
 module "repo" {
-  source       = "../modules/ecs/ecr_repo"
+  source       = "./modules/ecs/ecr_repo"
   name         = var.application_image_name
   scan_on_push = true
   tags         = local.tags
@@ -374,7 +374,7 @@ resource "docker_image" "app" {
 
 ### Create application cloudwatch log group
 module "app_log_group" {
-  source = "../modules/cloudwatch_log_group"
+  source = "./modules/cloudwatch_log_group"
 
   name      = "sssssss" #module.ecs_service.service.name
   retention = 7
@@ -386,7 +386,7 @@ module "db_restore_instance" {
   depends_on = [
     module.postgres_db
   ]
-  source        = "../modules/ec2"
+  source        = "./modules/ec2"
   ami           = data.aws_ami.amazon-2.image_id
   instance_type = "t2.micro"
   tags          = local.tags

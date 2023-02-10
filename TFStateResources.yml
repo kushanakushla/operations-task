@@ -1,0 +1,52 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: A basic CloudFormation template for to deploy an S3 bucket and a DynamoDB.
+Resources:
+  s3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub 'terraform-state-${AWS::AccountId}-${AWS::Region}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+  s3BucketPolicy:
+    DependsOn: s3Bucket
+    Type: AWS::S3::BucketPolicy
+    Properties: 
+      Bucket: !Sub 'terraform-state-${AWS::AccountId}-${AWS::Region}'
+      PolicyDocument: 
+        Version: '2012-10-17'
+        Id: Policy1535002507915
+        Statement:
+          - Sid: Stmt1504640908907
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !Sub 'arn:aws:s3:::terraform-state-${AWS::AccountId}-${AWS::Region}/*'
+              - !Sub 'arn:aws:s3:::terraform-state-${AWS::AccountId}-${AWS::Region}'
+            Condition:
+              Bool:
+                aws:SecureTransport: 'false'
+  DynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      AttributeDefinitions: 
+        - AttributeName: LockID
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: LockID
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName: !Sub 'terraform-state-${AWS::AccountId}-${AWS::Region}'
