@@ -264,7 +264,7 @@ module "postgres_db" {
 ### Create RDS db password secret
 module "rds_postgres_cred" {
   source        = "./modules/secret"
-  name          = "${var.application}-rds-db-cred3"
+  name          = "${var.application}-rds-db-cred4"
   secret_string = random_password.postgres_db_password.result
   tags          = local.tags
 }
@@ -272,7 +272,7 @@ module "rds_postgres_cred" {
 ### Create RDS db address secret
 module "rds_postgres_endpoint" {
   source        = "./modules/secret"
-  name          = "${var.application}-rds-db-address3"
+  name          = "${var.application}-rds-db-address4"
   secret_string = module.postgres_db.rds.address
   tags          = local.tags
 }
@@ -376,7 +376,7 @@ resource "docker_image" "app" {
 module "app_log_group" {
   source = "./modules/cloudwatch_log_group"
 
-  name      = "sssssss" #module.ecs_service.service.name
+  name      = module.ecs_service.service.name
   retention = 7
   tags      = local.tags
 }
