@@ -1,6 +1,6 @@
 ### Global Variables
 global_tags = {
-  "App"         = "testapp"
+  "App"         = "xeneta-app"
   "ManagedBy"   = "Terraform"
   "Environment" = "dev"
 }
@@ -10,12 +10,12 @@ tags = {
 
 ### VPC Components related variables
 
-region                          = "us-east-1"
+region                          = "eu-west-1"
 vpc_cidr                        = "10.240.26.0/23"
 priv_subnets_cidr               = ["10.240.26.128/26", "10.240.26.192/26"]
 pub_subnets_cidr                = ["10.240.26.0/26", "10.240.26.64/26"]
 db_subnets_cidr                 = ["10.240.27.0/26", "10.240.27.64/26"]
-vpc_azs                         = ["us-east-1a", "us-east-1b"]
+vpc_azs                         = ["eu-west-1a", "eu-west-1b"]
 num_az                          = 2
 pub_sub_map_public_ip_on_launch = "true"
 
