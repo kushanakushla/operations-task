@@ -22,7 +22,7 @@ Some general points:
 
 ## Practical case: Deployable development environment
 
-** [Solution Documetation for Case 1](Case1.md) **
+[Please Click here to check Solution Documetation for Case 1](Case1.md)
 
 ### Premise
 
@@ -104,6 +104,8 @@ The output should be something like this:
 ## Case: Data ingestion pipeline
 
 In this section we are seeking high-level answers, use a maximum of couple of paragraphs to answer the questions.
+
+[Please Click here to check Solution Documetation for Case 2](Case2.md)
 
 ### Extended service
 
