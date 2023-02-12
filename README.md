@@ -22,6 +22,8 @@ Some general points:
 
 ## Practical case: Deployable development environment
 
+[Please Click here to check Solution Documetation for Case 1](Case1.md)
+
 ### Premise
 
 Provided are two simplified parts of the same application environment: A database dump and an API service. Your task is to automate setting up the development environment in a reliable and testable manner using "infrastructure as code" principles.
@@ -102,6 +104,8 @@ The output should be something like this:
 ## Case: Data ingestion pipeline
 
 In this section we are seeking high-level answers, use a maximum of couple of paragraphs to answer the questions.
+
+[Please Click here to check Solution Documetation for Case 2](Case2.md)
 
 ### Extended service
 
