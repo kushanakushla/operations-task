@@ -1,0 +1,85 @@
+name: Deploy Rates Application AutoDeploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy_dev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.7
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Initializing Terraform and validate the config
+        id: init
+        run: |
+          cd infra
+          pwd
+          terraform init -upgrade -backend-config=backends/dev/dev.tfvars
+          terraform validate -no-color
+
+      - name: Executing Terraform Plan to Dev
+        id: plan
+        run: |
+          echo "Executing Terraform Plan for Version : ${GITHUB_SHA} to Dev"
+          cd infra
+          terraform plan -var="image_tag=${GITHUB_SHA}" -var-file=variables/dev/dev.tfvars
+
+      - name: Deploying the Changes to Dev
+        id: apply
+        run: |
+          echo "Deploying Version : ${GITHUB_SHA} to Dev"
+          cd infra
+          terraform apply -var="image_tag=${GITHUB_SHA}" -var-file=variables/dev/dev.tfvars -auto-approve
+
+  deploy_qa:
+    needs: deploy_dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.7
+
+      - name: Initializing Terraform and validate the config
+        id: init
+        run: |
+            echo "deploying to QA"
+
+  deploy_stg:
+    needs: deploy_qa
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.7
+
+      - name: Initializing Terraform and validate the config
+        id: init
+        run: |
+            echo "deploying to STG"
+
+  deploy_prod:
+    needs: deploy_stg
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.7
+
+      - name: Initializing Terraform and validate the config
+        id: init
+        run: |
+            echo "deploying to PROD"

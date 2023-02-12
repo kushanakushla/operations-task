@@ -1,10 +1,10 @@
-name: Deploy Application
+name: Deploy Rates Application Ad-Hoc
 
 on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'deployment environment'
+        description: 'Environment'
         required: true
         default: 'dev'
         type: choice
@@ -13,36 +13,94 @@ on:
         - qa
         - stg
         - prod
+      version:
+        description: 'Application Deployment Version'
+        required: false
+        type: string
+      create_tf_state_stack:
+        description: 'Create TF State Resources'
+        required: true
+        default: false
+        type: choice
+        options:
+        - true
+        - false
+
+
 env:
   ENVIRONMENT: ${{ inputs.environment }}
+  CREATE_TF_STATE_STACK: ${{ inputs.create_tf_state_stack }}
+  VERSION: ${{ inputs.version }}
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.7
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Deploying to Dev Environment
-      run: |
-        echo "The SHA of this commit is: ${GITHUB_SHA}"
-    - name: ECHO environment
-      run: |
-        echo "Environment is: $ENVIRONMENT"
-  
+      # - name: Deploy TF State Cloudformation Stack
+      #   run: |
+      #     if [ $CREATE_TF_STATE_STACK = "false" ]; then
+      #         echo "Skipping TF State Resources Creation"
+      #     else
+      #         aws cloudformation deploy --template-file TFStateResources.yml --stack-name tf-state-resources-stack-${ENVIRONMENT}
+      #     fi
 
-    # - name: Set up Node.js
-    #   uses: actions/setup-node@v2
-    #   with:
-    #     node-version: 14
+      - name: Initializing Terraform and validate the config
+        id: init
+        run: |
+          cd infra
+          pwd
+          terraform init -upgrade -backend-config=backends/$ENVIRONMENT/$ENVIRONMENT.tfvars
+          terraform validate -no-color
 
-    # - name: Stage 1 - Prepare environment
-    #   run: |
-    #     echo "Preparing environment..."
-    #     sudo apt-get update
+      # - name: Executing Terraform Plan
+      #   id: plan
+      #   run: |
+      #     if [ -z "$VERSION" ]; then
+      #         echo "Version Not Provided, Using Commit SHA as the Deployment Version Version : ${GITHUB_SHA}"
+      #         echo "Executing Terraform Plan for Version : ${GITHUB_SHA} to ${ENVIRONMENT}"
+      #         cd infra
+      #         terraform plan -var="image_tag=${GITHUB_SHA}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars
+      #     else
+      #         echo "Executing Terraform Plan : ${VERSION} to ${ENVIRONMENT}"
+      #         cd infra
+      #         terraform plan -var="image_tag=${VERSION}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars
+      #     fi
 
-    # - name: Stage 2 - Install dependencies
-    #   run: |
-    #     echo "Installing dependencies..."
-    #     sudo apt-get install -y libsodium-dev
+      # - name: Deploying the Changes
+      #   id: apply
+      #   run: |
+      #     if [ -z "$VERSION" ]; then
+      #         echo "Version Not Provided, Using Commit SHA as the Deployment Version Version : ${GITHUB_SHA}"
+      #         echo "Deploying Version : ${GITHUB_SHA} to ${ENVIRONMENT}"
+      #         cd infra
+      #         terraform apply -var="image_tag=${GITHUB_SHA}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
+      #     else
+      #         echo "Deploying Version : ${VERSION} to ${ENVIRONMENT}"
+      #         cd infra
+      #         terraform apply -var="image_tag=${VERSION}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
+      #     fi
+
+      - name: Destroying the Changes
+        id: destroy
+        run: |
+          if [ -z "$VERSION" ]; then
+              echo "Version Not Provided, Using Commit SHA as the Deployment Version Version : ${GITHUB_SHA}"
+              echo "Deploying Version : ${VERSION} to ${ENVIRONMENT}"
+              cd infra
+              terraform destroy -var="image_tag=${GITHUB_SHA}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
+          else
+              echo "Deploying Version : ${VERSION} to ${ENVIRONMENT}"
+              cd infra
+              terraform destroy -var="image_tag=${VERSION}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
+          fi
