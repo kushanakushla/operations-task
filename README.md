@@ -22,6 +22,8 @@ Some general points:
 
 ## Practical case: Deployable development environment
 
+[Solution Documetation for Case 1](Case1.md)
+
 ### Premise
 
 Provided are two simplified parts of the same application environment: A database dump and an API service. Your task is to automate setting up the development environment in a reliable and testable manner using "infrastructure as code" principles.
