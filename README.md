@@ -22,7 +22,7 @@ Some general points:
 
 ## Practical case: Deployable development environment
 
-[Solution Documetation for Case 1](Case1.md)
+** [Solution Documetation for Case 1](Case1.md) **
 
 ### Premise
 
