@@ -41,7 +41,7 @@ terraform plan -var="image_tag=$DEPLOYMENT_VERSION" -var-file=variables/${DEPLOY
 # apply terraform plan
 echo -e "$GREEN Destroying ${DEPLOYMENT_ENV} environment $NC"
 
-terraform apply -var="image_tag=$DEPLOYMENT_VERSION" -var-file=variables/${DEPLOYMENT_ENV}/${DEPLOYMENT_ENV}.tfvars
+terraform destroy -var="image_tag=$DEPLOYMENT_VERSION" -var-file=variables/${DEPLOYMENT_ENV}/${DEPLOYMENT_ENV}.tfvars
 
 cd ../
 
