@@ -77,30 +77,30 @@ jobs:
               terraform plan -var="image_tag=${VERSION}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars
           fi
 
-#       - name: Deploying the Changes
-#         id: apply
-#         run: |
-#           if [ -z "$VERSION" ]; then
-#               echo "Version Not Provided, Using Commit SHA as the Deployment Version Version : ${GITHUB_SHA}"
-#               echo "Deploying Version : ${GITHUB_SHA} to ${ENVIRONMENT}"
-#               cd infra
-#               terraform apply -var="image_tag=${GITHUB_SHA}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
-#           else
-#               echo "Deploying Version : ${VERSION} to ${ENVIRONMENT}"
-#               cd infra
-#               terraform apply -var="image_tag=${VERSION}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
-#           fi
-
-      - name: Destroying the Changes
-        id: destroy
+      - name: Deploying the Changes
+        id: apply
         run: |
           if [ -z "$VERSION" ]; then
               echo "Version Not Provided, Using Commit SHA as the Deployment Version Version : ${GITHUB_SHA}"
-              echo "Deploying Version : ${VERSION} to ${ENVIRONMENT}"
+              echo "Deploying Version : ${GITHUB_SHA} to ${ENVIRONMENT}"
               cd infra
-              terraform destroy -var="image_tag=${GITHUB_SHA}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
+              terraform apply -var="image_tag=${GITHUB_SHA}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
           else
               echo "Deploying Version : ${VERSION} to ${ENVIRONMENT}"
               cd infra
-              terraform destroy -var="image_tag=${VERSION}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
+              terraform apply -var="image_tag=${VERSION}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
           fi
+
+#       - name: Destroying the Changes
+#         id: destroy
+#         run: |
+#           if [ -z "$VERSION" ]; then
+#               echo "Version Not Provided, Using Commit SHA as the Deployment Version Version : ${GITHUB_SHA}"
+#               echo "Deploying Version : ${VERSION} to ${ENVIRONMENT}"
+#               cd infra
+#               terraform destroy -var="image_tag=${GITHUB_SHA}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
+#           else
+#               echo "Deploying Version : ${VERSION} to ${ENVIRONMENT}"
+#               cd infra
+#               terraform destroy -var="image_tag=${VERSION}" -var-file=variables/${ENVIRONMENT}/${ENVIRONMENT}.tfvars -auto-approve
+#           fi
